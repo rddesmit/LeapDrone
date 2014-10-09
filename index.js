@@ -35,39 +35,59 @@ controller.on('frame', function (frame) {
             var pitch = (hand.pitch() / 3.14159265) + 0.5;
             var roll = (hand.roll() / 3.14159265) + 0.5;
 
-            //forward
-            if (pitch > 0.65) {
-                drone.front((pitch - 0.5) * 2);
-                console.log('forward speed: ' + ((pitch - 0.5) * 2));
-            }
             //backward
-            else if (pitch < 0.35) {
-                drone.back((0.5 - pitch) * 2);
-                console.log('backward speed: ' + ((0.5 - pitch) * 2));
+            if (pitch > 0.5) {
+                drone.back(pitch - 0.5);
+                console.log('backward speed: ' + (pitch - 0.5));
             }
+            //forward
             else {
-                drone.front(0);
-                drone.back(0);
+                drone.front(0.5 - pitch);
+                console.log('forward speed: ' + (0.5 - pitch));
             }
 
             //left
-            if (roll > 0.65) {
-                drone.left((roll - 0.5) * 2);
-                console.log('left speed: ' + ((roll - 0.5) * 2));
+            if (roll > 0.5) {
+                drone.left(roll - 0.5);
+                console.log('left speed: ' + (roll - 0.5));
             }
             //right
-            else if (roll < 0.35) {
-                drone.right((0.5 - roll) * 2);
-                console.log('right speed: ' + ((0.5 - roll) * 2));
-            }
             else {
-                drone.left(0);
-                drone.right(0);
+                drone.right(0.5 - roll);
+                console.log('right speed: ' + (0.5 - roll));
+            }
+
+            //height
+            if (frame.valid && frame.gestures.length > 0) {
+                frame.gestures.forEach(function (gesture) {
+                    if (gesture.type == 'circle') {
+                        var pointableID = gesture.pointableIds[0];
+                        var direction = frame.pointable(pointableID).direction;
+                        var dotProduct = Leap.vec3.dot(direction, gesture.normal);
+
+                        //up
+                        if (dotProduct > 0) {
+                            drone.up(0.6);
+                            console.log('up');
+                        }
+                        //down
+                        else {
+                            drone.down(0.6);
+                            console.log('down');
+                        }
+                    }
+                });
             }
         }
     });
 
+    //hover
+    if (hands.length == 0 && flying) {
+        drone.stop();
+        console.log('hovering');
+    }
+
 });
 
 controller.connect();
-console.log("\nWaiting for device to connect...");
+console.log("\nReady to take off");
