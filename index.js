@@ -34,27 +34,39 @@ controller.on('frame', function (frame) {
         if (flying) {
             var pitch = (hand.pitch() / 3.14159265) + 0.5;
             var roll = (hand.roll() / 3.14159265) + 0.5;
+            var yaw = (hand.yaw() / 3.14159265) + 0.5;
 
             //backward
             if (pitch > 0.5) {
                 drone.back(pitch - 0.5);
-                console.log('backward speed: ' + (pitch - 0.5));
+                //console.info('backward speed: ' + (pitch - 0.5));
             }
             //forward
             else {
                 drone.front(0.5 - pitch);
-                console.log('forward speed: ' + (0.5 - pitch));
+                //console.info('forward speed: ' + (0.5 - pitch));
             }
 
             //left
             if (roll > 0.5) {
                 drone.left(roll - 0.5);
-                console.log('left speed: ' + (roll - 0.5));
+                //console.info('left speed: ' + (roll - 0.5));
             }
             //right
             else {
                 drone.right(0.5 - roll);
-                console.log('right speed: ' + (0.5 - roll));
+                //console.info('right speed: ' + (0.5 - roll));
+            }
+
+            //rotate left
+            if (yaw > 0.5) {
+                drone.clockwise(yaw - 0.5);
+                console.info("rotate left: " + (yaw - 0.5));
+            }
+            //rotate right
+            else {
+                drone.counterClockwise(0.5 - yaw);
+                console.info("rotate right: " + (0.5 - yaw));
             }
 
             //height
@@ -68,12 +80,12 @@ controller.on('frame', function (frame) {
                         //up
                         if (dotProduct > 0) {
                             drone.up(0.6);
-                            console.log('up');
+                            console.info('up');
                         }
                         //down
                         else {
                             drone.down(0.6);
-                            console.log('down');
+                            console.info('down');
                         }
                     }
                 });
@@ -84,7 +96,7 @@ controller.on('frame', function (frame) {
     //hover
     if (hands.length == 0 && flying) {
         drone.stop();
-        console.log('hovering');
+        console.info('hovering');
     }
 
 });
